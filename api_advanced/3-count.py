@@ -2,13 +2,18 @@
 """
 3-count.py
 """
-import requests
 import sys
-
+from collections import defaultdict
+import requests
 
 def count_words(subreddit, word_list, after=None, word_count=None):
+    """
+    A recursive function that queries the Reddit API, parses the title of all
+    hot articles, and prints a sorted count of given keywords (case-insensitive,
+    delimited by spaces).
+    """
     if word_count is None:
-        word_count = {word.lower(): 0 for word in word_list}
+        word_count = defaultdict(int)
 
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {"User-Agent": "Mozilla/5.0"}
