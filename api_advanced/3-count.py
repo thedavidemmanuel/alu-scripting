@@ -29,8 +29,10 @@ def count_words(subreddit, word_list, after="", count=[]):
             result = [(word_list[i].lower(), count[i]) for i in range(len(word_list))]
             result = sorted(result, key=lambda x: (-x[1], x[0]))
 
+            printed = set()
             for word, c in result:
-                if c > 0:
+                if c > 0 and word not in printed:
                     print("{}: {}".format(word, c))
+                    printed.add(word)
         else:
             count_words(subreddit, word_list, after, count)
