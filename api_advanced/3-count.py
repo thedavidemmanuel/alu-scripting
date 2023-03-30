@@ -3,11 +3,11 @@
 import requests
 
 
-def count_words(subreddit, word_list, after="", count_dict=None):
+def count_words(subreddit, word_list, after="", count=[]):
     """ prints a sorted count of given keywords """
 
-    if count_dict is None:
-        count_dict = {}
+    if after == "":
+        count = [0] * len(word_list)
 
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
     request = requests.get(url,
@@ -20,15 +20,17 @@ def count_words(subreddit, word_list, after="", count_dict=None):
 
         for topic in (data['data']['children']):
             for word in topic['data']['title'].split():
-                for keyword in word_list:
-                    if keyword.lower() == word.lower():
-                        count_dict[keyword.lower()] = count_dict.get(keyword.lower(), 0) + 1
+                for i in range(len(word_list)):
+                    if word_list[i].lower() == word.lower():
+                        count[i] += 1
 
         after = data['data']['after']
         if after is None:
-            sorted_dict = dict(sorted(count_dict.items(),
-                                      key=lambda x: (-x[1], x[0])))
-            for k, v in sorted_dict.items():
-                print("{}: {}".format(k, v))
+            result = [(word_list[i].lower(), count[i]) for i in range(len(word_list))]
+            result = sorted(result, key=lambda x: (-x[1], x[0]))
+
+            for word, c in result:
+                if c > 0:
+                    print("{}: {}".format(word, c))
         else:
-            count_words(subreddit, word_list, after, count_dict)
+            count_words(subreddit, word_list, after, count)
